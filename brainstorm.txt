@@ -1,0 +1,29 @@
+TCP
+
+modify select code example for server:
+	add another for loop at around line  148
+		echo to clients other than sender
+
+server spams out list of clients when ppl joins/leaves
+	includes hostname, username
+
+client:
+	receive message
+		print to chat area with hostname/username if defined
+		optional: print to file
+
+	receive client update
+		update client list
+
+client list [255][3]
+	2D array containing
+		hostname
+		username
+		admin
+
+
+admin privileges
+	kick
+
+
+
