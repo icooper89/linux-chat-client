@@ -1,22 +1,43 @@
+
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 
+
 #define SERVER_TCP_PORT 7000	// Default port
-#define BUFLEN	255		//Buffer length
+#define BUFLEN	1024 - 2 * sizeof(int)		//Buffer length
 #define TRUE	1
 #define LISTENQ	5
 #define MAXLINE 4096
+#define MAXCLIENTS 256
+#define MAXNAMELEN 256
+
+#define MSG_NEW 1
+#define MSG_REM 2
+#define MSG_TEXT 3
+
 
 void setupListenSocket (int port);
 void serverLoop(int listen_sd);
 void echoToAll(int origin,int client[], int maxi,char buf[]);
 static void SystemFatal(const char* message);
+
+typedef struct ClientInfo {
+    int id;
+	char hostname[MAXNAMELEN];
+	char username[MAXNAMELEN];
+	int admin;
+} CINFO, *PCINFO;
+typedef struct Packet{
+    int type;
+    int owner;
+    char data[BUFLEN];
+} PACKET, *PPACKET;
 
 
 int main(void){
@@ -60,7 +81,8 @@ void setupListenSocket (int port){
 
 
 void serverLoop(int listen_sd){
-
+    CINFO client_info[MAXCLIENTS];
+    PPACKET rxPacket;//, txPacket;
 
 	int i, maxi, nready, bytes_to_read;
 	int new_sd, sockfd,  maxfd, client[FD_SETSIZE];
@@ -134,9 +156,18 @@ void serverLoop(int listen_sd){
 					bp += n;
 					bytes_to_read -= n;
 				}
-				//write(sockfd, buf, BUFLEN);   // echo to client
-				echoToAll(sockfd, client, maxi, buf);  //echo to all clients but original sender
-
+				
+				rxPacket = (PPACKET) buf;
+				
+				if (rxPacket->type == MSG_TEXT){
+				    //write(sockfd, buf, BUFLEN);   // echo to client
+				    echoToAll(sockfd, client, maxi, buf);  //echo to all clients but original sender
+                } else if(rxPacket->type == MSG_NEW){
+                    PCINFO temp_cinfo = (PCINFO) rxPacket->data;
+                    client_info[i].id = i;
+//                    client_info[i]->hostname = 
+                    strcpy(client_info[i].username ,temp_cinfo->username);
+                }
 				if (n == 0) // connection closed by client
             			{
 					printf(" Remote Address:  %s closed connection\n", inet_ntoa(client_addr.sin_addr));

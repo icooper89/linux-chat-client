@@ -4,9 +4,12 @@ modify select code example for server:
 	add another for loop at around line  148
 		echo to clients other than sender
 
-server spams out list of clients when ppl joins/leaves
-	message type 1
-	includes hostname, username
+
+message types:
+	message type 1: add user
+	message type 2: remove
+	message type 3: text
+
 
 client:
 	receive message
@@ -16,19 +19,39 @@ client:
 	receive client update
 		update client list
 
-client list [255][3]
-	2D array containing
-		hostname
-		username
-		admin
-
+clientinfo [256]
+	array containing
+struct clientinfo {
+		char hostname[];
+		char username[];
+		bool admin;
+};
 
 admin privileges
 	kick
 
 Packet data:
 	int type
-	int sequence
-	byte data[1024-2]
+	byte data[1024-1]
+
+
+client main window
+    variables:
+        clientinfo
+        clientinfo[256]
+        chat log location
+        socket
+    functions:
+        
+socket class:
+    variables:
+        port - parameter
+        socket handle
+    functions:
+        send
+        receive
+
+
+
 
 
