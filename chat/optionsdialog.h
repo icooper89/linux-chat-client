@@ -15,6 +15,9 @@ public:
     explicit OptionsDialog(QWidget *parent = 0);
     ~OptionsDialog();
     Ui::OptionsDialog *ui;
+
+private slots:
+    void on_pushButton_clicked();
 };
 
 #endif // OPTIONSDIALOG_H

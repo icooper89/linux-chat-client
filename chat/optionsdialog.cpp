@@ -1,5 +1,6 @@
 #include "optionsdialog.h"
 #include "ui_optionsdialog.h"
+#include "QFileDialog"
 
 OptionsDialog::OptionsDialog(QWidget *parent) :
     QDialog(parent),
@@ -11,4 +12,11 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
 OptionsDialog::~OptionsDialog()
 {
     delete ui;
+}
+
+void OptionsDialog::on_pushButton_clicked()
+{
+    QString filename;
+    filename = QFileDialog::getOpenFileName(0, "Chat Log Location");
+    ui->filename->setText(filename);
 }
