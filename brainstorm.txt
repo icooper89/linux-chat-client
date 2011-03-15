@@ -5,6 +5,7 @@ modify select code example for server:
 		echo to clients other than sender
 
 server spams out list of clients when ppl joins/leaves
+	message type 1
 	includes hostname, username
 
 client:
@@ -25,5 +26,9 @@ client list [255][3]
 admin privileges
 	kick
 
+Packet data:
+	int type
+	int sequence
+	byte data[1024-2]
 
 

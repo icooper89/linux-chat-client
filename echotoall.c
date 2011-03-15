@@ -1,3 +1,30 @@
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <stdlib.h>
+#include <strings.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+
+#define SERVER_TCP_PORT 7000	// Default port
+#define BUFLEN	255		//Buffer length
+#define TRUE	1
+#define LISTENQ	5
+#define MAXLINE 4096
+
+void setupListenSocket (int port);
+void serverLoop(int listen_sd);
+void echoToAll(int origin,int client[], int maxi,char buf[]);
+static void SystemFatal(const char* message);
+
+
+int main(void){
+	setupListenSocket(SERVER_TCP_PORT);
+	return 0;
+}
+
+
 void setupListenSocket (int port){
 
 	int arg;
@@ -32,12 +59,13 @@ void setupListenSocket (int port){
 
 
 
-void serverLoop(int listen_sd, ){
+void serverLoop(int listen_sd){
 
 
 	int i, maxi, nready, bytes_to_read;
-	int new_sd, sockfd, client_len, port, maxfd, client[FD_SETSIZE];
-	struct sockaddr_in server, client_addr;
+	int new_sd, sockfd,  maxfd, client[FD_SETSIZE];
+	struct sockaddr_in client_addr;
+	socklen_t client_len;
 	char *bp, buf[BUFLEN];
    	size_t n;
    	fd_set rset, allset;
@@ -124,8 +152,8 @@ void serverLoop(int listen_sd, ){
    	}
 }
 
-void echoToAll(int origin,int[] client, int maxi,char[] buf){
-	int i;
+void echoToAll(int origin,int client[], int maxi,char buf[]){
+	int i, sockfd;
 
 	for(i = 0; i <=maxi; i++){
 		if((sockfd = client[i]) <0 || sockfd == origin){
@@ -133,4 +161,10 @@ void echoToAll(int origin,int[] client, int maxi,char[] buf){
 		}
 		write(sockfd, buf, BUFLEN);
 	}
+}
+
+static void SystemFatal(const char* message)
+{
+    perror (message);
+    exit (EXIT_FAILURE);
 }
