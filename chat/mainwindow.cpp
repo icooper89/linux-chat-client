@@ -1,5 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "connectdialog.h"
+#include "optionsdialog.h"
+#include "ui_optionsdialog.h"
+#include "ui_connectdialog.h"
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -26,8 +30,31 @@ void MainWindow::changeEvent(QEvent *e)
     }
 }
 
+
+
+void MainWindow::on_actionExit_triggered()
+{
+    exit(1);
+}
+
 void MainWindow::on_actionConnect_triggered()
 {
-    connect_dialog dialog(this);
-    dialog.exec();
+    ConnectDialog dialog(this);
+
+    if(dialog.exec()){
+
+    }
+}
+
+void MainWindow::on_actionOptions_triggered()
+{
+    OptionsDialog dialog(this);
+    bool save;
+    QString username;
+
+    if(dialog.exec()){
+        save = dialog.ui->save->isChecked();
+        username = dialog.ui->username->text();
+    }
+
 }

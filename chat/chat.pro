@@ -4,10 +4,12 @@
 TARGET = chat
 TEMPLATE = app
 SOURCES += main.cpp \
-    mainwindow.cpp
-HEADERS += mainwindow.h
+    mainwindow.cpp \
+    optionsdialog.cpp \
+    connectdialog.cpp
+HEADERS += mainwindow.h \
+    optionsdialog.h \
+    connectdialog.h
 FORMS += mainwindow.ui \
-    ../connect_dialog.ui \
-    ../Options_dialog.ui \
-    Options_dialog.ui \
-    connect_dialog.ui
+    optionsdialog.ui \
+    connectdialog.ui
