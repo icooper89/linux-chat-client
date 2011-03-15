@@ -4,10 +4,9 @@
 #include "optionsdialog.h"
 #include "ui_optionsdialog.h"
 #include "ui_connectdialog.h"
+#include "client.h"
 #include <QDialog>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+
 
 
 char* ip;
@@ -15,6 +14,7 @@ int port;
 bool save;
 QString username;
 int saveFile;
+int sd;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -56,6 +56,10 @@ void MainWindow::on_actionConnect_triggered()
         temp = dialog.ui->lineEdit->text().toAscii();
         ip = temp.data();
         port = dialog.ui->lineEdit_2->text().toInt();
+        if((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1){
+            printf("error creating socket");
+        }
+        connectToServer(sd, port, ip);
     }
 }
 

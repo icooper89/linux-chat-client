@@ -6,10 +6,12 @@ TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
     optionsdialog.cpp \
-    connectdialog.cpp
+    connectdialog.cpp \
+    client.cpp
 HEADERS += mainwindow.h \
     optionsdialog.h \
-    connectdialog.h
+    connectdialog.h \
+    client.h
 FORMS += mainwindow.ui \
     optionsdialog.ui \
     connectdialog.ui
