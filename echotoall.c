@@ -31,7 +31,7 @@ typedef struct ClientInfo {
 typedef struct Packet{
     int type;
     int owner;
-    char * data;
+    char data[BUFLEN];
 } PACKET, *PPACKET;
 
 
@@ -114,15 +114,15 @@ void serverLoop(int listen_sd){
 		nready = select(maxfd + 1, &rset, NULL, NULL, NULL);
 
 
-      		if (FD_ISSET(listen_sd, &rset)) // new client connection
-      		{
+      	if (FD_ISSET(listen_sd, &rset)) // new client connection
+      	{
 			client_len = sizeof(client_addr);
 			if ((new_sd = accept(listen_sd, (struct sockaddr *) &client_addr, &client_len)) == -1)
 				SystemFatal("accept error");
 			
-                        printf(" Remote Address:  %s\n", inet_ntoa(client_addr.sin_addr));
+            printf(" Remote Address:  %s\n", inet_ntoa(client_addr.sin_addr));
 
-                        for (i = 0; i < FD_SETSIZE; i++)
+            for (i = 0; i < FD_SETSIZE; i++)
 			if (client[i] < 0)
             		{
 				client[i] = new_sd;	// save descriptor
@@ -170,7 +170,7 @@ void serverLoop(int listen_sd){
 				    //write(sockfd, buf, BUFLEN);   // echo to client
 				    txPacket->type = MSG_TEXT;
 				    txPacket->owner = i;
-				    txPacket->data = buf;
+				    memcpy(txPacket->data , buf, BUFLEN);
 				    echoToAll(sockfd, client, maxi, txPacket);  //echo to all clients but original sender
                 } else if(rxPacket->type == MSG_NEW){
                     PCINFO temp_cinfo = (PCINFO) rxPacket->data;
@@ -178,7 +178,7 @@ void serverLoop(int listen_sd){
                     memset(temp_cinfo->hostname, 0, MAXNAMELEN);
                     temp_cinfo->id = i;
                     txPacket->type =  MSG_NEW;
-                    txPacket->data = (char*) temp_cinfo;
+                    memcpy(txPacket->data, temp_cinfo,BUFLEN);
                     txPacket->owner = i;
                     echoToAll(sockfd, client,maxi, txPacket);
                 }
@@ -190,7 +190,7 @@ void serverLoop(int listen_sd){
                		client[i] = -1;
                		
                		txPacket->type = MSG_REM;
-               		txPacket->data = NULL;
+               		memset(txPacket->data ,0,BUFLEN);
                		txPacket->owner = i;
                		echoToAll (sockfd, client, maxi, txPacket);
                		
