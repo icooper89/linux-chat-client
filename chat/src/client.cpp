@@ -35,3 +35,9 @@ void sendPacket(char buffer[BUFLEN], PMYSOCKET socket, PCINFO info){
 
     //send(socket->socket, packet, PACKETSIZE, NULL);
 }
+
+void cleanup(PMYSOCKET socket, PCINFO info){
+    close(socket->socket);
+    free(socket);
+    free(info);
+}

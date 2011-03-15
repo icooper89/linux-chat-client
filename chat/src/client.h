@@ -39,4 +39,5 @@ typedef struct MySocket{
 
 bool connectToServer(PMYSOCKET socket, PCINFO info);
 void sendPacket(char buffer[BUFLEN], PMYSOCKET socket, PCINFO info);
+void cleanup(PMYSOCKET socket, PCINFO info);
 #endif // CLIENT_H

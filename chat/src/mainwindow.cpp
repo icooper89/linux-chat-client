@@ -10,10 +10,8 @@
 
 
 
-char* ip;
-int port;
-bool save;
 
+bool save;
 int saveFile;
 int sd;
 PCINFO info;
@@ -28,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     info = (PCINFO)malloc(sizeof(PCINFO));
 
     mySocket = (PMYSOCKET)malloc(sizeof(PMYSOCKET));
+    info->id = -1;
     ui->setupUi(this);
 }
 
@@ -52,6 +51,7 @@ void MainWindow::changeEvent(QEvent *e)
 
 void MainWindow::on_actionExit_triggered()
 {
+    cleanup(mySocket, info);
     exit(1);
 }
 
@@ -69,8 +69,9 @@ void MainWindow::on_actionConnect_triggered()
         } else {
             mySocket->socket = sd;
         }
-        info->id = 0;
-        connectToServer(mySocket, info);
+        if(connectToServer(mySocket, info)){
+            connected = true;
+        }
     }
 }
 
@@ -97,10 +98,12 @@ void MainWindow::on_actionOptions_triggered()
 void MainWindow::on_sendButton_clicked()
 {
     char buffer[BUFLEN];
-    info->id = 0;
-    strcpy(buffer, ui->send->text().toLatin1());
-    ui->display->append(ui->send->text());
-    sendPacket(buffer, mySocket, info);
+    if(!connected){
+        strcpy(buffer, "Me: ");
+        strcat(buffer, ui->send->text().toLatin1());
+        ui->display->append(buffer);
+        sendPacket(buffer, mySocket, info);
+    }
     ui->send->clear();
 }
 
@@ -108,3 +111,5 @@ void MainWindow::on_send_returnPressed()
 {
     MainWindow::on_sendButton_clicked();
 }
+
+
