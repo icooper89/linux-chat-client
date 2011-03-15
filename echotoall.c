@@ -22,11 +22,6 @@
 #define MSG_TEXT 3
 
 
-void setupListenSocket (int port);
-void serverLoop(int listen_sd);
-void echoToAll(int origin,int client[], int maxi,char buf[]);
-static void SystemFatal(const char* message);
-
 typedef struct ClientInfo {
     int id;
 	char hostname[MAXNAMELEN];
@@ -36,8 +31,15 @@ typedef struct ClientInfo {
 typedef struct Packet{
     int type;
     int owner;
-    char data[BUFLEN];
+    char * data;
 } PACKET, *PPACKET;
+
+
+void setupListenSocket (int port);
+void serverLoop(int listen_sd);
+void echoToAll(int origin,int client[], int maxi, PPACKET buf);
+static void SystemFatal(const char* message);
+
 
 
 int main(void){
@@ -82,7 +84,7 @@ void setupListenSocket (int port){
 
 void serverLoop(int listen_sd){
     CINFO client_info[MAXCLIENTS];
-    PPACKET rxPacket;//, txPacket;
+    PPACKET rxPacket, txPacket;
 
 	int i, maxi, nready, bytes_to_read;
 	int new_sd, sockfd,  maxfd, client[FD_SETSIZE];
@@ -92,6 +94,7 @@ void serverLoop(int listen_sd){
    	size_t n;
    	fd_set rset, allset;
 
+    txPacket = (PPACKET) malloc(sizeof(PACKET));
 
 	listen(listen_sd, LISTENQ);
 
@@ -165,30 +168,42 @@ void serverLoop(int listen_sd){
 				
 				if (rxPacket->type == MSG_TEXT){
 				    //write(sockfd, buf, BUFLEN);   // echo to client
-				    echoToAll(sockfd, client, maxi, buf);  //echo to all clients but original sender
+				    txPacket->type = MSG_TEXT;
+				    txPacket->owner = i;
+				    txPacket->data = buf;
+				    echoToAll(sockfd, client, maxi, txPacket);  //echo to all clients but original sender
                 } else if(rxPacket->type == MSG_NEW){
                     PCINFO temp_cinfo = (PCINFO) rxPacket->data;
                     strcpy(client_info[i].username ,temp_cinfo->username);
                     memset(temp_cinfo->hostname, 0, MAXNAMELEN);
                     temp_cinfo->id = i;
-                    
+                    txPacket->type =  MSG_NEW;
+                    txPacket->data = (char*) temp_cinfo;
+                    txPacket->owner = i;
+                    echoToAll(sockfd, client,maxi, txPacket);
                 }
-				if (n == 0) // connection closed by client
-            			{
+				if (n == 0) { // connection closed by client
+            			
 					printf(" Remote Address:  %s closed connection\n", inet_ntoa(client_addr.sin_addr));
 					close(sockfd);
 					FD_CLR(sockfd, &allset);
-               				client[i] = -1;
-            			}
+               		client[i] = -1;
+               		
+               		txPacket->type = MSG_REM;
+               		txPacket->data = NULL;
+               		txPacket->owner = i;
+               		echoToAll (sockfd, client, maxi, txPacket);
+               		
+            	}
 									            				
 				if (--nready <= 0)
-            				break;        // no more readable descriptors
+            		break;        // no more readable descriptors
 			}
-     		 }
+        }
    	}
 }
 
-void echoToAll(int origin,int client[], int maxi,char buf[]){
+void echoToAll(int origin,int client[], int maxi,PPACKET buf){
 	int i, sockfd;
 
 	for(i = 0; i <=maxi; i++){

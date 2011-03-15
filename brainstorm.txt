@@ -32,7 +32,8 @@ admin privileges
 
 Packet data:
 	int type
-	byte data[1024-1]
+	int owner
+	byte data[1024-2]
 
 
 client main window
