@@ -53,9 +53,9 @@ void MainWindow::on_actionConnect_triggered()
     QByteArray temp;
 
     if(dialog.exec()){
-        temp = dialog.ui->ip->text().toAscii();
+        temp = dialog.ui->lineEdit->text().toAscii();
         ip = temp.data();
-        port = dialog.ui->port->text().toInt();
+        port = dialog.ui->lineEdit_2->text().toInt();
     }
 }
 
