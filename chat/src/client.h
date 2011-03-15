@@ -10,9 +10,32 @@
 #include <netinet/in.h>
 #include <errno.h>
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 
-bool connectToServer(int socket, int port, char* host);
+#define MAXLINE 4096
+#define MAXCLIENTS 256
+#define MAXNAMELEN 256
+#define BUFLEN	1024 - 2 * sizeof(int)		//Buffer length
+
+typedef struct ClientInfo {
+    int id;
+        char hostname[MAXNAMELEN];
+        char username[MAXNAMELEN];
+        int admin;
+} CINFO, *PCINFO;
+typedef struct Packet{
+    int type;
+    int owner;
+    char data[BUFLEN];
+} PACKET, *PPACKET;
+
+typedef struct MySocket{
+    int socket;
+    int port;
+} MYSOCKET, *PMYSOCKET;
+
+bool connectToServer(PMYSOCKET socket, PCINFO info);
+void sendPacket(char buffer[BUFLEN], PCINFO info);
 #endif // CLIENT_H

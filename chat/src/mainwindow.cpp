@@ -6,6 +6,7 @@
 #include "ui_connectdialog.h"
 #include "client.h"
 #include <QDialog>
+#include <qmessagebox.h>
 
 
 
@@ -15,6 +16,8 @@ bool save;
 QString username;
 int saveFile;
 int sd;
+PCINFO info;
+PMYSOCKET mySocket;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -54,12 +57,14 @@ void MainWindow::on_actionConnect_triggered()
 
     if(dialog.exec()){
         temp = dialog.ui->lineEdit->text().toAscii();
-        ip = temp.data();
-        port = dialog.ui->lineEdit_2->text().toInt();
+        strcpy(info->hostname, temp.data());
+        mySocket->port = dialog.ui->lineEdit_2->text().toInt();
         if((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1){
             printf("error creating socket");
+        } else {
+            mySocket->socket = sd;
         }
-        connectToServer(sd, port, ip);
+        connectToServer(mySocket, info);
     }
 }
 
