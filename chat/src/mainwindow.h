@@ -20,6 +20,8 @@ private:
     Ui::MainWindow *ui;
 
 private slots:
+    void on_send_returnPressed();
+    void on_sendButton_clicked();
     void on_actionOptions_triggered();
     void on_actionExit_triggered();
     void on_actionConnect_triggered();

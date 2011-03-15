@@ -25,7 +25,7 @@ bool connectToServer(PMYSOCKET socket, PCINFO info){
 
 }
 
-void sendPacket(char buffer[BUFLEN], PCINFO info){
+void sendPacket(char buffer[BUFLEN], PMYSOCKET socket, PCINFO info){
     PPACKET packet;
     packet = (PPACKET)malloc(sizeof(PPACKET));
 
@@ -33,5 +33,5 @@ void sendPacket(char buffer[BUFLEN], PCINFO info){
     packet->owner = info->id;
     strcpy(packet->data, buffer);
 
-    //send();
+    //send(socket->socket, packet, PACKETSIZE, NULL);
 }

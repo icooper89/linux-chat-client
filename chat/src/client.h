@@ -18,6 +18,7 @@
 #define MAXCLIENTS 256
 #define MAXNAMELEN 256
 #define BUFLEN	1024 - 2 * sizeof(int)		//Buffer length
+#define PACKETSIZE 1024
 
 typedef struct ClientInfo {
     int id;
@@ -37,5 +38,5 @@ typedef struct MySocket{
 } MYSOCKET, *PMYSOCKET;
 
 bool connectToServer(PMYSOCKET socket, PCINFO info);
-void sendPacket(char buffer[BUFLEN], PCINFO info);
+void sendPacket(char buffer[BUFLEN], PMYSOCKET socket, PCINFO info);
 #endif // CLIENT_H
