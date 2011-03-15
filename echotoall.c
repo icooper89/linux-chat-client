@@ -123,6 +123,10 @@ void serverLoop(int listen_sd){
 			if (client[i] < 0)
             		{
 				client[i] = new_sd;	// save descriptor
+				client_info[i].id = i;
+                strcpy (client_info[i].hostname, inet_ntoa(client_addr.sin_addr));
+				
+				
 				break;
             		}
 			if (i == FD_SETSIZE)
@@ -150,7 +154,7 @@ void serverLoop(int listen_sd){
 			if (FD_ISSET(sockfd, &rset))
          		{
          			bp = buf;
-				bytes_to_read = BUFLEN;
+				bytes_to_read = sizeof(PACKET);
 				while ((n = read(sockfd, bp, bytes_to_read)) > 0)
 				{
 					bp += n;
@@ -164,9 +168,10 @@ void serverLoop(int listen_sd){
 				    echoToAll(sockfd, client, maxi, buf);  //echo to all clients but original sender
                 } else if(rxPacket->type == MSG_NEW){
                     PCINFO temp_cinfo = (PCINFO) rxPacket->data;
-                    client_info[i].id = i;
-//                    client_info[i]->hostname = 
                     strcpy(client_info[i].username ,temp_cinfo->username);
+                    memset(temp_cinfo->hostname, 0, MAXNAMELEN);
+                    temp_cinfo->id = i;
+                    
                 }
 				if (n == 0) // connection closed by client
             			{
@@ -190,7 +195,7 @@ void echoToAll(int origin,int client[], int maxi,char buf[]){
 		if((sockfd = client[i]) <0 || sockfd == origin){
 			continue;
 		}
-		write(sockfd, buf, BUFLEN);
+		write(sockfd, buf, sizeof(PACKET));
 	}
 }
 
