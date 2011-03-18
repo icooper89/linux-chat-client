@@ -188,6 +188,7 @@ void serverLoop(int listen_sd){
 					close(sockfd);
 					FD_CLR(sockfd, &allset);
                		client[i] = -1;
+               		client_info[i].id = -1;
                		
                		txPacket->type = MSG_REM;
                		memset(txPacket->data ,0,BUFLEN);
