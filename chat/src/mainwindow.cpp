@@ -101,7 +101,10 @@ void MainWindow::on_sendButton_clicked()
     if(!connected){
         strcpy(buffer, "Me: ");
         strcat(buffer, ui->send->text().toLatin1());
-        ui->display->append(buffer);
+        
+        //ui->display->append(buffer);
+        addToDisplay(buffer);
+        
         sendPacket(buffer, mySocket, info);
     }
     ui->send->clear();
@@ -112,4 +115,7 @@ void MainWindow::on_send_returnPressed()
     MainWindow::on_sendButton_clicked();
 }
 
-
+void MainWindow::addToDisplay(QString text){
+    ui->display->append(text);
+    
+}

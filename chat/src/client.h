@@ -20,6 +20,12 @@
 #define BUFLEN	1024 - 2 * sizeof(int)		//Buffer length
 #define PACKETSIZE 1024
 
+
+#define MSG_NEW 1
+#define MSG_REM 2
+#define MSG_TEXT 3
+
+
 typedef struct ClientInfo {
     int id;
         char hostname[MAXNAMELEN];

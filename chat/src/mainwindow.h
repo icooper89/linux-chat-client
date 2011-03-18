@@ -14,6 +14,8 @@ public:
     ~MainWindow();
 
 
+    void addToDisplay(QString text);
+
 protected:
     void changeEvent(QEvent *e);
 
