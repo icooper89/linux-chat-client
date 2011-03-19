@@ -62,7 +62,8 @@ void parsePacket(PPACKET packet){
             break;
         case MSG_NEW:
             //add client info
-            //addClient((PCINFO)packet->data);
+            //PCINFO temp = (PCINFO)packet->data;
+            //addClient(temp->id,temp);
             break;
         case MSG_REM:
             //remove client from list
