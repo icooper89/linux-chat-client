@@ -15,6 +15,7 @@ bool save;
 int saveFile;
 int sd;
 PCINFO info;
+PCINFO* otherClients;
 
 PMYSOCKET mySocket;
 bool connected;
@@ -24,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     info = (PCINFO)malloc(sizeof(PCINFO));
+    otherClients = (PCINFO*) calloc (sizeof(PCINFO),MAXCLIENTS);
 
     mySocket = (PMYSOCKET)malloc(sizeof(PMYSOCKET));
     info->id = -1;
@@ -117,5 +119,15 @@ void MainWindow::on_send_returnPressed()
 
 void MainWindow::addToDisplay(QString text){
     ui->display->append(text);
+    
+}
+
+void MainWindow::addClient(int id, PCINFO data){
+    otherClients[id] = data;
+    
+}
+void MainWindow::remClient(int id){
+    
+    otherClients[id] = NULL;
     
 }

@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "defines.h"
 
 namespace Ui {
     class MainWindow;
@@ -15,12 +16,14 @@ public:
 
 
     void addToDisplay(QString text);
-
+    void addClient(int id, PCINFO data);
+    void remClient(int id);
 protected:
     void changeEvent(QEvent *e);
 
 private:
     Ui::MainWindow *ui;
+    
 
 private slots:
     void on_send_returnPressed();
