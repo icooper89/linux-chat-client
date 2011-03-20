@@ -30,16 +30,18 @@ bool connectToServer(PMYSOCKET socket, PCINFO info){
 void sendPacket(char buffer[BUFLEN], PMYSOCKET socket, PCINFO info){
     PPACKET packet;
     packet = (PPACKET)malloc(sizeof(PACKET));
-
+    memset(packet->data, 0, sizeof(packet->data));
+    int err;
     packet->type = 3;
     packet->owner = info->id;
     strcpy(packet->data, buffer);
-
-    send(socket->socket, packet, PACKETSIZE, NULL);
+    int i = sizeof(packet);
+    send(socket->socket, packet, sizeof(packet), NULL);
 }
 
-void cleanup(PMYSOCKET socket, PCINFO info){
+void cleanup(PMYSOCKET socket, PCINFO info, int file){
     close(socket->socket);
+    close(file);
     free(socket);
     free(info);
 }
@@ -47,7 +49,7 @@ void cleanup(PMYSOCKET socket, PCINFO info){
 void readLoop(PMYSOCKET mySocket){
     PPACKET packet;
     packet = (PPACKET)malloc(sizeof(PACKET));
-    recv(mySocket->socket,packet,PACKETSIZE,NULL);
+    recv(mySocket->socket,packet,sizeof(packet),NULL);
     
     parsePacket(packet);//move to completion routine? cant remember if recv is blocking or not
     readLoop(mySocket);

@@ -53,7 +53,7 @@ void MainWindow::changeEvent(QEvent *e)
 
 void MainWindow::on_actionExit_triggered()
 {
-    cleanup(mySocket, info);
+    cleanup(mySocket, info, saveFile);
     exit(1);
 }
 
@@ -73,6 +73,9 @@ void MainWindow::on_actionConnect_triggered()
         }
         if(connectToServer(mySocket, info)){
             connected = true;
+            ClientThread *thread = new ClientThread(mySocket);
+            thread->start();
+
         }
     }
 }
@@ -92,6 +95,7 @@ void MainWindow::on_actionOptions_triggered()
         saveName = temp.data();
         if(save){
             saveFile = open(saveName, O_CREAT);
+            perror("open");
         }
     }
 
@@ -100,14 +104,18 @@ void MainWindow::on_actionOptions_triggered()
 void MainWindow::on_sendButton_clicked()
 {
     char buffer[BUFLEN];
-    if(!connected){
+    int i;
+    if(connected){
         strcpy(buffer, "Me: ");
         strcat(buffer, ui->send->text().toLatin1());
         
         //ui->display->append(buffer);
         addToDisplay(buffer);
-        
-        sendPacket(buffer, mySocket, info);
+        if(save){
+           i = write(saveFile, buffer, strlen(buffer));
+           perror("write");
+        }
+        sendPacket(ui->send->text().toLatin1().data(), mySocket, info);
     }
     ui->send->clear();
 }
