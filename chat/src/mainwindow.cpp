@@ -131,3 +131,9 @@ void MainWindow::remClient(int id){
     otherClients[id] = NULL;
     
 }
+QString MainWindow::getClientName(int id){
+    if(otherClients[id] != NULL){
+        return otherClients[id]->username;
+    }
+    else return NULL;
+}

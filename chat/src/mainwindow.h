@@ -18,6 +18,7 @@ public:
     void addToDisplay(QString text);
     void addClient(int id, PCINFO data);
     void remClient(int id);
+    QString getClientName(int id);
 protected:
     void changeEvent(QEvent *e);
 
