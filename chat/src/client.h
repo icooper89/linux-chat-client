@@ -13,10 +13,25 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <QThread>
 
 #include "defines.h"
+
+class ClientThread: public QThread{
+    Q_OBJECT
+
+public:
+    ClientThread(PMYSOCKET mySocket);
+protected:
+    void run();
+
+private:
+    PMYSOCKET mySocket_;
+};
 
 bool connectToServer(PMYSOCKET socket, PCINFO info);
 void sendPacket(char buffer[BUFLEN], PMYSOCKET socket, PCINFO info);
 void cleanup(PMYSOCKET socket, PCINFO info);
+void parsePacket(PPACKET packet);
+
 #endif // CLIENT_H

@@ -1,3 +1,5 @@
+#ifndef DEFINES_H
+#define DEFINES_H
 #define MAXLINE 4096
 #define MAXCLIENTS 256
 #define MAXNAMELEN 256
@@ -26,3 +28,4 @@ typedef struct MySocket{
     int socket;
     int port;
 } MYSOCKET, *PMYSOCKET;
+#endif  //DEFINES_H

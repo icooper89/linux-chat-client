@@ -119,6 +119,9 @@ void MainWindow::on_send_returnPressed()
 
 void MainWindow::addToDisplay(QString text){
     ui->display->append(text);
+    if(save){
+        write(saveFile, text.toLatin1(), text.length());
+    }
     
 }
 

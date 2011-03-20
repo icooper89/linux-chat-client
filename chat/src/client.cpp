@@ -1,4 +1,6 @@
 #include "client.h"
+#include "mainwindow.h"
+#include <QString>
 
 bool connectToServer(PMYSOCKET socket, PCINFO info){
     struct hostent *hp;
@@ -33,7 +35,7 @@ void sendPacket(char buffer[BUFLEN], PMYSOCKET socket, PCINFO info){
     packet->owner = info->id;
     strcpy(packet->data, buffer);
 
-    //send(socket->socket, packet, PACKETSIZE, NULL);
+    send(socket->socket, packet, PACKETSIZE, NULL);
 }
 
 void cleanup(PMYSOCKET socket, PCINFO info){
@@ -47,19 +49,21 @@ void readLoop(PMYSOCKET mySocket){
     packet = (PPACKET)malloc(sizeof(PACKET));
     recv(mySocket->socket,packet,PACKETSIZE,NULL);
     
-    //parsePacket(packet);//move to completion routine? cant remember if recv is blocking or not
+    parsePacket(packet);//move to completion routine? cant remember if recv is blocking or not
+    readLoop(mySocket);
 }
 
 void parsePacket(PPACKET packet){
     switch(packet->type){
-        case MSG_TEXT:
+        case MSG_TEXT:{
             //send data to window/log
-            QString buf;
-            buf += getClientName(packet->owner);
+            /*QString buf;
+            buf += MainWindow::getClientName(packet->owner);
             buf += ": ";
             buf += packet->data;
-            addToDisplay(buf);
+            MainWindow::addToDisplay(buf);*/
             break;
+        }
         case MSG_NEW:
             //add client info
             //PCINFO temp = (PCINFO)packet->data;
@@ -73,3 +77,10 @@ void parsePacket(PPACKET packet){
     }
 }
 
+ClientThread::ClientThread(PMYSOCKET mySocket):mySocket_(mySocket){
+
+}
+
+void ClientThread::run(){
+    readLoop(mySocket_);
+}
