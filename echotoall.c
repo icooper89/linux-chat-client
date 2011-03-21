@@ -145,17 +145,6 @@ void serverLoop(int listen_sd){
                     echoToAll(new_sd, client,maxi, txPacket);
 				  
 				  
-				  
-				  
-				  
-				  /*
-                memset(txPacket->hostname, 0, MAXNAMELEN);
-                strcpy( txPacket->username, client_info[i].username);
-                txPacket->type =  MSG_NEW;
-
-                txPacket->owner = i;
-                echoToAll(new_sd, client, maxi, txPacket);
-				*/
 				break;
             		}
 			if (i == FD_SETSIZE)
@@ -198,6 +187,8 @@ void serverLoop(int listen_sd){
 				    txPacket->owner = i;
 				    memcpy(txPacket->data , rxPacket->data, BUFLEN);
 				    echoToAll(sockfd, client, maxi, txPacket);  //echo to all clients but original sender
+				    
+				    
                 } else if(rxPacket->type == MSG_NEW){
                     PCINFO temp_cinfo = (PCINFO) rxPacket->data;
                     strcpy(client_info[i].username ,temp_cinfo->username);
@@ -208,6 +199,8 @@ void serverLoop(int listen_sd){
                     txPacket->owner = i;
                     echoToAll(sockfd, client,maxi, txPacket);
                 }
+                
+                
 				if (bp == buf) { // connection closed by client
             			
 					printf(" Remote Address:  %s closed connection\n", inet_ntoa(client_addr.sin_addr));
