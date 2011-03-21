@@ -77,11 +77,15 @@ void MainWindow::on_actionConnect_triggered()
         }
         if(connectToServer(mySocket, info)){
             connected = true;
+            PPACKET tempPacket;
+            tempPacket = (PPACKET)malloc(sizeof(PACKET));
+            tempPacket->type = MSG_NEW;
+            tempPacket->owner = info->id;
+            memcpy(tempPacket->data, info, BUFLEN);
             ClientThread *thread = new ClientThread(mySocket);
-
             connect(thread,SIGNAL(parsePacketSig(PPACKET)),SLOT(parsePacket(PPACKET)));
             thread->start();
-
+            send(mySocket->socket, (char*) tempPacket, PACKETSIZE, NULL);
         }
     }
 }
@@ -119,13 +123,13 @@ void MainWindow::on_sendButton_clicked()
         
         //ui->display->append(buffer);
         addToDisplay(buffer);
-        if(save){
+        /*if(save){
             QTextStream out(saveFile);
 
            out << buffer;
             //i = write(saveFile, buffer, strlen(buffer));
            //perror("write");
-        }
+        }*/
         sendPacket(ui->send->text().toLatin1().data(), mySocket, info);
     //}
     ui->send->clear();
@@ -141,7 +145,7 @@ void MainWindow::addToDisplay(QString text){
     if(save){
         QTextStream out(saveFile);
 
-       out << text.toLatin1();
+       out << text.toLatin1().append("\n");
         //write(saveFile, text.toLatin1(), text.length());
     }
     
@@ -158,6 +162,9 @@ void MainWindow::remClient(int id){
 }
 QString MainWindow::getClientName(int id){
     if(otherClients[id] != NULL){
+        if(strcmp(otherClients[id]->username, "") == 0){
+            return otherClients[id]->hostname;
+        }
         return otherClients[id]->username;
     }
     else return NULL;
