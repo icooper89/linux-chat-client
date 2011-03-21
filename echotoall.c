@@ -86,7 +86,7 @@ void serverLoop(int listen_sd){
     CINFO client_info[MAXCLIENTS];
     PPACKET rxPacket, txPacket;
 
-	int i, maxi, nready, bytes_to_read;
+	int i,j, maxi, nready, bytes_to_read;
 	int new_sd, sockfd,  maxfd, client[FD_SETSIZE];
 	struct sockaddr_in client_addr;
 	socklen_t client_len;
@@ -125,37 +125,42 @@ void serverLoop(int listen_sd){
             for (i = 0; i < FD_SETSIZE; i++)
 			if (client[i] < 0)
             		{
-				client[i] = new_sd;	// save descriptor
-				client_info[i].id = i;
+            		
+            	for (j=0; j<= maxi; j++){
+                    if(client[j] >= 0){
+                        PCINFO temp_cinfo = (PCINFO) malloc(sizeof(CINFO));
+                        strcpy(temp_cinfo->username, client_info[j].username);
+                        temp_cinfo->id = j;
+
+                        txPacket->type =  MSG_NEW;
+                        memcpy(txPacket->data, temp_cinfo,BUFLEN);
+                        txPacket->owner = j;
+                        
+                        write(new_sd, txPacket, sizeof(*txPacket));
+                    }
+                }
+            		
+                client[i] = new_sd;	// save descriptor
+                client_info[i].id = i;
                 strcpy (client_info[i].hostname, inet_ntoa(client_addr.sin_addr));
-				strcpy (client_info[i].username, client_info[i].hostname);
+                strcpy (client_info[i].username, client_info[i].hostname);
+
+                
+
+
+
+                PCINFO temp_cinfo = (PCINFO) malloc(sizeof(CINFO));
+                strcpy(temp_cinfo->username, client_info[i].username);
+                temp_cinfo->id = i;
+
+                txPacket->type =  MSG_NEW;
+                memcpy(txPacket->data, temp_cinfo,BUFLEN);
+                txPacket->owner = i;
+                echoToAll(new_sd, client,maxi, txPacket);
 				
 				  
-				  
-			   PCINFO temp_cinfo = (PCINFO) malloc(sizeof(CINFO));
-			   strcpy(temp_cinfo->username, client_info[i].username);
-			   temp_cinfo->id = i;
-			   
-			   
-			   
-                    
-                    txPacket->type =  MSG_NEW;
-                    memcpy(txPacket->data, temp_cinfo,BUFLEN);
-                    txPacket->owner = i;
-                    echoToAll(new_sd, client,maxi, txPacket);
-				  
-				  
-				  
-				  
-				  
-				  /*
-                memset(txPacket->hostname, 0, MAXNAMELEN);
-                strcpy( txPacket->username, client_info[i].username);
-                txPacket->type =  MSG_NEW;
 
-                txPacket->owner = i;
-                echoToAll(new_sd, client, maxi, txPacket);
-				*/
+				
 				break;
             		}
 			if (i == FD_SETSIZE)
@@ -198,6 +203,8 @@ void serverLoop(int listen_sd){
 				    txPacket->owner = i;
 				    memcpy(txPacket->data , rxPacket->data, BUFLEN);
 				    echoToAll(sockfd, client, maxi, txPacket);  //echo to all clients but original sender
+				    
+				    
                 } else if(rxPacket->type == MSG_NEW){
                     PCINFO temp_cinfo = (PCINFO) rxPacket->data;
                     strcpy(client_info[i].username ,temp_cinfo->username);
@@ -207,7 +214,10 @@ void serverLoop(int listen_sd){
                     memcpy(txPacket->data, temp_cinfo,BUFLEN);
                     txPacket->owner = i;
                     echoToAll(sockfd, client,maxi, txPacket);
+                    write(sockfd, txPacket,sizeof(PACKET));
                 }
+                
+                
 				if (bp == buf) { // connection closed by client
             			
 					printf(" Remote Address:  %s closed connection\n", inet_ntoa(client_addr.sin_addr));
