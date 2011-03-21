@@ -7,12 +7,13 @@
 #include "client.h"
 #include <QDialog>
 #include <qmessagebox.h>
-
+#include <QFile>
+#include <QTextStream>
 
 
 
 bool save;
-int saveFile;
+QFile* saveFile;
 int sd;
 PCINFO info;
 PCINFO* otherClients;
@@ -53,7 +54,7 @@ void MainWindow::changeEvent(QEvent *e)
 
 void MainWindow::on_actionExit_triggered()
 {
-    cleanup(mySocket, info, saveFile);
+    cleanup(mySocket, info,NULL);// saveFile);
     exit(1);
 }
 
@@ -85,6 +86,7 @@ void MainWindow::on_actionOptions_triggered()
     OptionsDialog dialog(this);
     QByteArray temp;
     char* saveName;
+    //QFile saveFile_;
 
 
     if(dialog.exec()){
@@ -94,8 +96,9 @@ void MainWindow::on_actionOptions_triggered()
         temp = dialog.ui->filename->text().toLatin1();
         saveName = temp.data();
         if(save){
-            saveFile = open(saveName, O_RDWR | O_CREAT);
-            perror("open");
+            saveFile=new QFile(saveName); // open(saveName, O_CREAT|O_WRONLY);
+            saveFile->open(QIODevice::WriteOnly | QIODevice::Text);
+            //perror("open");
         }
     }
 
@@ -105,18 +108,21 @@ void MainWindow::on_sendButton_clicked()
 {
     char buffer[BUFLEN];
     int i;
-    if(connected){
+    //if(connected){
         strcpy(buffer, "Me: ");
         strcat(buffer, ui->send->text().toLatin1());
         
         //ui->display->append(buffer);
         addToDisplay(buffer);
         if(save){
-           i = write(saveFile, buffer, strlen(buffer));
-           perror("write");
+            QTextStream out(saveFile);
+
+           out << buffer;
+            //i = write(saveFile, buffer, strlen(buffer));
+           //perror("write");
         }
         sendPacket(ui->send->text().toLatin1().data(), mySocket, info);
-    }
+    //}
     ui->send->clear();
 }
 
@@ -128,7 +134,10 @@ void MainWindow::on_send_returnPressed()
 void MainWindow::addToDisplay(QString text){
     ui->display->append(text);
     if(save){
-        write(saveFile, text.toLatin1(), text.length());
+        QTextStream out(saveFile);
+
+       out << text.toLatin1();
+        //write(saveFile, text.toLatin1(), text.length());
     }
     
 }
