@@ -50,33 +50,10 @@ void ClientThread::readLoop(PMYSOCKET mySocket){
     packet = (PPACKET)malloc(sizeof(PACKET));
     recv(mySocket->socket,(char*)packet,sizeof(PACKET),NULL);
     
-    ClientThread::parsePacket(packet);//move to completion routine? cant remember if recv is blocking or not
+    emit parsePacketSig(packet);//move to completion routine? cant remember if recv is blocking or not
     readLoop(mySocket);
 }
 
-void ClientThread::parsePacket(PPACKET packet){
-    switch(packet->type){
-        case MSG_TEXT:{
-            //send data to window/log
-            QString buf;
-            //buf += MainWindow::getClientName(packet->owner);
-            buf += ": ";
-            buf += packet->data;
-            emit addDisplaySig(buf);
-            break;
-        }
-        case MSG_NEW:
-            //add client info
-            //PCINFO temp = (PCINFO)packet->data;
-            //addClient(temp->id,temp);
-            break;
-        case MSG_REM:
-            //remove client from list
-            //PCINFO temp = (PCINFO)packet->data;
-            //remClient(temp->id);
-            break;
-    }
-}
 
 ClientThread::ClientThread(PMYSOCKET mySocket):mySocket_(mySocket){
 

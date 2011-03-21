@@ -9,6 +9,7 @@
 #include <qmessagebox.h>
 #include <QFile>
 #include <QTextStream>
+#include <QMetaType>
 
 
 
@@ -28,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
     info = (PCINFO)malloc(sizeof(PCINFO));
     otherClients = (PCINFO*) calloc (sizeof(PCINFO),MAXCLIENTS);
 
-
+    qRegisterMetaType<PPACKET>("PPACKET");
 
     mySocket = (PMYSOCKET)malloc(sizeof(PMYSOCKET));
     info->id = -1;
@@ -78,7 +79,7 @@ void MainWindow::on_actionConnect_triggered()
             connected = true;
             ClientThread *thread = new ClientThread(mySocket);
 
-            connect(thread,SIGNAL(addDisplaySig(QString)),SLOT(addToDisplay(QString)));
+            connect(thread,SIGNAL(parsePacketSig(PPACKET)),SLOT(parsePacket(PPACKET)));
             thread->start();
 
         }
@@ -160,4 +161,34 @@ QString MainWindow::getClientName(int id){
         return otherClients[id]->username;
     }
     else return NULL;
+}
+
+
+
+void MainWindow::parsePacket(PPACKET packet){
+    switch(packet->type){
+        case MSG_TEXT:{
+            //send data to window/log
+            QString buf;
+            QString name;
+
+            buf += getClientName(packet->owner);
+            buf += ": ";
+            buf += packet->data;
+            addToDisplay(buf);
+            break;
+        }
+    case MSG_NEW:{
+            //add client info
+            PCINFO temp = (PCINFO)packet->data;
+            addClient(temp->id,temp);
+            break;
+        }
+    case MSG_REM:{
+            //remove client from list
+            //PCINFO temp = (PCINFO)packet->data;
+            //remClient(temp->id);
+            break;
+        }
+    }
 }

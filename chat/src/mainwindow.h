@@ -20,8 +20,9 @@ public:
     void remClient(int id);
     QString getClientName(int id);
 
+    void addToDisplay(QString text);
     public slots:
-        void addToDisplay(QString text);
+        void parsePacket(PPACKET packet);
 
 protected:
     void changeEvent(QEvent *e);

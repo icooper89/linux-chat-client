@@ -128,8 +128,34 @@ void serverLoop(int listen_sd){
 				client[i] = new_sd;	// save descriptor
 				client_info[i].id = i;
                 strcpy (client_info[i].hostname, inet_ntoa(client_addr.sin_addr));
+				strcpy (client_info[i].username, client_info[i].hostname);
 				
-				
+				  
+				  
+			   PCINFO temp_cinfo = (PCINFO) malloc(sizeof(CINFO));
+			   strcpy(temp_cinfo->username, client_info[i].username);
+			   temp_cinfo->id = i;
+			   
+			   
+			   
+                    
+                    txPacket->type =  MSG_NEW;
+                    memcpy(txPacket->data, temp_cinfo,BUFLEN);
+                    txPacket->owner = i;
+                    echoToAll(new_sd, client,maxi, txPacket);
+				  
+				  
+				  
+				  
+				  
+				  /*
+                memset(txPacket->hostname, 0, MAXNAMELEN);
+                strcpy( txPacket->username, client_info[i].username);
+                txPacket->type =  MSG_NEW;
+
+                txPacket->owner = i;
+                echoToAll(new_sd, client, maxi, txPacket);
+				*/
 				break;
             		}
 			if (i == FD_SETSIZE)

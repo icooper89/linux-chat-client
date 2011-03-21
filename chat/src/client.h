@@ -21,13 +21,15 @@ class ClientThread: public QThread{
     Q_OBJECT
 
 signals:
-    void addDisplaySig(QString);
+
+    void parsePacketSig(PPACKET packet);
 public:
     ClientThread(PMYSOCKET mySocket);
 
 
-    void parsePacket(PPACKET packet);
+
     void readLoop(PMYSOCKET mySocket);
+
 protected:
     void run();
 
