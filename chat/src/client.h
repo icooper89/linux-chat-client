@@ -20,8 +20,14 @@
 class ClientThread: public QThread{
     Q_OBJECT
 
+signals:
+    void addDisplaySig(QString);
 public:
     ClientThread(PMYSOCKET mySocket);
+
+
+    void parsePacket(PPACKET packet);
+    void readLoop(PMYSOCKET mySocket);
 protected:
     void run();
 
@@ -32,6 +38,6 @@ private:
 bool connectToServer(PMYSOCKET socket, PCINFO info);
 void sendPacket(char buffer[BUFLEN], PMYSOCKET socket, PCINFO info);
 void cleanup(PMYSOCKET socket, PCINFO info, int file);
-void parsePacket(PPACKET packet);
+
 
 #endif // CLIENT_H

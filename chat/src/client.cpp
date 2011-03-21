@@ -45,24 +45,24 @@ void cleanup(PMYSOCKET socket, PCINFO info, int file){
     free(info);
 }
 //will need complete rehaul of this function:
-void readLoop(PMYSOCKET mySocket){
+void ClientThread::readLoop(PMYSOCKET mySocket){
     PPACKET packet;
     packet = (PPACKET)malloc(sizeof(PACKET));
-    recv(mySocket->socket,&array,sizeof(array),NULL);
+    recv(mySocket->socket,(char*)packet,sizeof(PACKET),NULL);
     
-    parsePacket(packet);//move to completion routine? cant remember if recv is blocking or not
+    ClientThread::parsePacket(packet);//move to completion routine? cant remember if recv is blocking or not
     readLoop(mySocket);
 }
 
-void parsePacket(PPACKET packet){
+void ClientThread::parsePacket(PPACKET packet){
     switch(packet->type){
         case MSG_TEXT:{
             //send data to window/log
-            /*QString buf;
-            buf += MainWindow::getClientName(packet->owner);
+            QString buf;
+            //buf += MainWindow::getClientName(packet->owner);
             buf += ": ";
             buf += packet->data;
-            MainWindow::addToDisplay(buf);*/
+            emit addDisplaySig(buf);
             break;
         }
         case MSG_NEW:

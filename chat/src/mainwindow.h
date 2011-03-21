@@ -15,10 +15,14 @@ public:
     ~MainWindow();
 
 
-    void addToDisplay(QString text);
+    //void addToDisplay(QString text);
     void addClient(int id, PCINFO data);
     void remClient(int id);
     QString getClientName(int id);
+
+    public slots:
+        void addToDisplay(QString text);
+
 protected:
     void changeEvent(QEvent *e);
 

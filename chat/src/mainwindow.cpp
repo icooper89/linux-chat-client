@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent) :
     info = (PCINFO)malloc(sizeof(PCINFO));
     otherClients = (PCINFO*) calloc (sizeof(PCINFO),MAXCLIENTS);
 
+
+
     mySocket = (PMYSOCKET)malloc(sizeof(PMYSOCKET));
     info->id = -1;
     ui->setupUi(this);
@@ -75,6 +77,8 @@ void MainWindow::on_actionConnect_triggered()
         if(connectToServer(mySocket, info)){
             connected = true;
             ClientThread *thread = new ClientThread(mySocket);
+
+            connect(thread,SIGNAL(addDisplaySig(QString)),SLOT(addToDisplay(QString)));
             thread->start();
 
         }
