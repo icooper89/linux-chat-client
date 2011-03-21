@@ -182,7 +182,7 @@ void serverLoop(int listen_sd){
                     txPacket->owner = i;
                     echoToAll(sockfd, client,maxi, txPacket);
                 }
-				if (n == 0) { // connection closed by client
+				if (bp == buf) { // connection closed by client
             			
 					printf(" Remote Address:  %s closed connection\n", inet_ntoa(client_addr.sin_addr));
 					close(sockfd);
