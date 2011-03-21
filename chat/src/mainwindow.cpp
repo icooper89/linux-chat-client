@@ -123,13 +123,13 @@ void MainWindow::on_sendButton_clicked()
         
         //ui->display->append(buffer);
         addToDisplay(buffer);
-        if(save){
+        /*if(save){
             QTextStream out(saveFile);
 
            out << buffer;
             //i = write(saveFile, buffer, strlen(buffer));
            //perror("write");
-        }
+        }*/
         sendPacket(ui->send->text().toLatin1().data(), mySocket, info);
     //}
     ui->send->clear();
@@ -145,7 +145,7 @@ void MainWindow::addToDisplay(QString text){
     if(save){
         QTextStream out(saveFile);
 
-       out << text.toLatin1();
+       out << text.toLatin1().append("\n");
         //write(saveFile, text.toLatin1(), text.length());
     }
     
