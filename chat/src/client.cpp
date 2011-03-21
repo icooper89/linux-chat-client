@@ -48,7 +48,7 @@ void cleanup(PMYSOCKET socket, PCINFO info, int file){
 void readLoop(PMYSOCKET mySocket){
     PPACKET packet;
     packet = (PPACKET)malloc(sizeof(PACKET));
-    recv(mySocket->socket,&array,sizeof(array),NULL);
+    recv(mySocket->socket,(char*)packet,sizeof(PACKET),NULL);
     
     parsePacket(packet);//move to completion routine? cant remember if recv is blocking or not
     readLoop(mySocket);
