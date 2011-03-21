@@ -85,7 +85,9 @@ void MainWindow::on_actionConnect_triggered()
             ClientThread *thread = new ClientThread(mySocket);
             connect(thread,SIGNAL(parsePacketSig(PPACKET)),SLOT(parsePacket(PPACKET)));
             thread->start();
-            send(mySocket->socket, (char*) tempPacket, PACKETSIZE, NULL);
+            if(strcmp(info->username, "") != 0){
+                send(mySocket->socket, (char*) tempPacket, PACKETSIZE, NULL);
+            }
         }
     }
 }
