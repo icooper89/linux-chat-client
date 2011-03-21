@@ -94,7 +94,7 @@ void MainWindow::on_actionOptions_triggered()
         temp = dialog.ui->filename->text().toLatin1();
         saveName = temp.data();
         if(save){
-            saveFile = open(saveName, O_CREAT);
+            saveFile = open(saveName, O_RDWR | O_CREAT);
             perror("open");
         }
     }
