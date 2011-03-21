@@ -3,6 +3,11 @@
 #include <QString>
 #include <QByteArray>
 
+/*----------------------------------------------------------------------------
+connectToServer
+
+does the connect to tcp server.
+----------------------------------------------------------------------------*/
 bool connectToServer(PMYSOCKET socket, PCINFO info){
     struct hostent *hp;
     struct sockaddr_in server;
@@ -27,7 +32,11 @@ bool connectToServer(PMYSOCKET socket, PCINFO info){
     return true;
 
 }
+/*----------------------------------------------------------------------------
+sendPacket
 
+sends buf to server.
+----------------------------------------------------------------------------*/
 void sendPacket(char buffer[BUFLEN], PMYSOCKET socket, PCINFO info){
     PPACKET packet;
     packet = (PPACKET)malloc(sizeof(PACKET));
@@ -37,28 +46,44 @@ void sendPacket(char buffer[BUFLEN], PMYSOCKET socket, PCINFO info){
     strcpy(packet->data, buffer);
     send(socket->socket, (char*) packet, PACKETSIZE, NULL);
 }
+/*----------------------------------------------------------------------------
+cleanup
 
+closes sockets and files and structs.
+----------------------------------------------------------------------------*/
 void cleanup(PMYSOCKET socket, PCINFO info, int file){
     close(socket->socket);
     close(file);
     free(socket);
     free(info);
 }
-//will need complete rehaul of this function:
+/*----------------------------------------------------------------------------
+readloop
+
+thread code.
+----------------------------------------------------------------------------*/
 void ClientThread::readLoop(PMYSOCKET mySocket){
     PPACKET packet;
     packet = (PPACKET)malloc(sizeof(PACKET));
     recv(mySocket->socket,(char*)packet,sizeof(PACKET),NULL);
     
-    emit parsePacketSig(packet);//move to completion routine? cant remember if recv is blocking or not
+    emit parsePacketSig(packet);
     readLoop(mySocket);
 }
 
+/*----------------------------------------------------------------------------
+ClientThread
 
+Constructor.
+----------------------------------------------------------------------------*/
 ClientThread::ClientThread(PMYSOCKET mySocket):mySocket_(mySocket){
 
 }
+/*----------------------------------------------------------------------------
+run
 
+base for thread.
+----------------------------------------------------------------------------*/
 void ClientThread::run(){
     readLoop(mySocket_);
 }

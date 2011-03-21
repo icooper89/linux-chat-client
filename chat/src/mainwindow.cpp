@@ -22,6 +22,12 @@ PCINFO* otherClients;
 PMYSOCKET mySocket;
 bool connected;
 
+
+/*----------------------------------------------------------------------------
+MainWindow
+
+Constructor.
+----------------------------------------------------------------------------*/
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -35,7 +41,11 @@ MainWindow::MainWindow(QWidget *parent) :
     info->id = -1;
     ui->setupUi(this);
 }
+/*----------------------------------------------------------------------------
+~MainWindow
 
+Destructor.
+----------------------------------------------------------------------------*/
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -54,13 +64,24 @@ void MainWindow::changeEvent(QEvent *e)
 }
 
 
+/*----------------------------------------------------------------------------
+on_actionExit_triggered
 
+slot for menu selection: Exit
+----------------------------------------------------------------------------*/
 void MainWindow::on_actionExit_triggered()
 {
     cleanup(mySocket, info,NULL);// saveFile);
     exit(1);
 }
+/*----------------------------------------------------------------------------
+on_actionConnect_triggered
 
+slot for menu selection: Connect
+opens dialog box
+then connects to server
+then starts read thread
+----------------------------------------------------------------------------*/
 void MainWindow::on_actionConnect_triggered()
 {
     ConnectDialog dialog(this);
@@ -92,6 +113,14 @@ void MainWindow::on_actionConnect_triggered()
     }
 }
 
+/*----------------------------------------------------------------------------
+on_actionOptions_triggered
+
+slot for menu selection: Options
+
+can specify username and whether or not want to save chat log.
+----------------------------------------------------------------------------*/
+
 void MainWindow::on_actionOptions_triggered()
 {
     OptionsDialog dialog(this);
@@ -114,34 +143,42 @@ void MainWindow::on_actionOptions_triggered()
     }
 
 }
+/*----------------------------------------------------------------------------
+on_sendButton_clicked
 
+slot for send button being clicked
+will get and clear text from text box
+write text to display window and then send packet to server with text msg
+----------------------------------------------------------------------------*/
 void MainWindow::on_sendButton_clicked()
 {
     char buffer[BUFLEN];
-    int i;
-    //if(connected){
+
+    if(connected){
         strcpy(buffer, "Me: ");
         strcat(buffer, ui->send->text().toLatin1());
-        
-        //ui->display->append(buffer);
         addToDisplay(buffer);
-        /*if(save){
-            QTextStream out(saveFile);
 
-           out << buffer;
-            //i = write(saveFile, buffer, strlen(buffer));
-           //perror("write");
-        }*/
         sendPacket(ui->send->text().toLatin1().data(), mySocket, info);
-    //}
+    }
     ui->send->clear();
 }
+/*----------------------------------------------------------------------------
+on_send_returnPressed
+
+slot for pressing return button when send text box has focus.
+----------------------------------------------------------------------------*/
 
 void MainWindow::on_send_returnPressed()
 {
     MainWindow::on_sendButton_clicked();
 }
 
+/*----------------------------------------------------------------------------
+addToDisplay
+
+adds text to display window and to log file if enabled.
+----------------------------------------------------------------------------*/
 void MainWindow::addToDisplay(QString text){
     ui->display->append(text);
     if(save){
@@ -152,16 +189,33 @@ void MainWindow::addToDisplay(QString text){
     }
     
 }
+/*----------------------------------------------------------------------------
+addClient
+
+adds client data to array.
+----------------------------------------------------------------------------*/
 
 void MainWindow::addClient(int id, PCINFO data){
     otherClients[id] = data;
     
 }
+
+/*----------------------------------------------------------------------------
+remClient
+
+removes client data from array.
+----------------------------------------------------------------------------*/
 void MainWindow::remClient(int id){
     
     otherClients[id] = NULL;
     
 }
+
+/*----------------------------------------------------------------------------
+getClientName
+
+gets the username of the specified client.
+----------------------------------------------------------------------------*/
 QString MainWindow::getClientName(int id){
     if(otherClients[id] != NULL){
         if(strcmp(otherClients[id]->username, "") == 0){
@@ -172,7 +226,18 @@ QString MainWindow::getClientName(int id){
     else return NULL;
 }
 
+/*----------------------------------------------------------------------------
+parsePacket
 
+deals with the packet received.  depends on the packet type:
+MSG_TEXT:
+    adds msg data to display window.
+MSG_NEW:
+    adds msg data as client info to array.
+MSG_REM:
+    unimplemented because not needed.
+    removes client info from array.
+----------------------------------------------------------------------------*/
 
 void MainWindow::parsePacket(PPACKET packet){
     switch(packet->type){
