@@ -41,12 +41,22 @@ void echoToAll(int origin,int client[], int maxi, PPACKET buf);
 static void SystemFatal(const char* message);
 
 
+/*--------------------------------------------------------------------------
+main
 
+entry into program.
+--------------------------------------------------------------------------*/
 int main(void){
 	setupListenSocket(SERVER_TCP_PORT);
 	return 0;
 }
 
+
+/*--------------------------------------------------------------------------
+setupListenSocket
+
+sets up the Listen Socket and then starts the server loop.
+--------------------------------------------------------------------------*/
 
 void setupListenSocket (int port){
 
@@ -81,6 +91,23 @@ void setupListenSocket (int port){
 
 
 
+/*--------------------------------------------------------------------------
+serverLoop
+
+server's routine.
+    select
+		if new connections
+			save accepted socket
+			send existing client data to new client
+			send new client's data to existing clients
+		if packet received
+			if MSG_NEW
+				send client data to all but origin
+			if MSG_TEXT
+				echo to all but origin
+		if disconnect
+			send MSG_REM to remaining clients
+--------------------------------------------------------------------------*/
 
 void serverLoop(int listen_sd){
     CINFO client_info[MAXCLIENTS];
@@ -240,6 +267,11 @@ void serverLoop(int listen_sd){
    	}
 }
 
+/*----------------------------------------------------------------------------
+echoToAll
+
+sends buf to all clients except origin.
+----------------------------------------------------------------------------*/
 void echoToAll(int origin,int client[], int maxi,PPACKET buf){
 	int i, sockfd;
 
@@ -250,7 +282,11 @@ void echoToAll(int origin,int client[], int maxi,PPACKET buf){
 		write(sockfd, buf, sizeof(PACKET));
 	}
 }
+/*----------------------------------------------------------------------------
+SystemFatal
 
+prints error messages out and quits.
+----------------------------------------------------------------------------*/
 static void SystemFatal(const char* message)
 {
     perror (message);
