@@ -170,7 +170,7 @@ void serverLoop(int listen_sd){
 				    //write(sockfd, buf, BUFLEN);   // echo to client
 				    txPacket->type = MSG_TEXT;
 				    txPacket->owner = i;
-				    memcpy(txPacket->data , buf, BUFLEN);
+				    memcpy(txPacket->data , rxPacket->data, BUFLEN);
 				    echoToAll(sockfd, client, maxi, txPacket);  //echo to all clients but original sender
                 } else if(rxPacket->type == MSG_NEW){
                     PCINFO temp_cinfo = (PCINFO) rxPacket->data;
